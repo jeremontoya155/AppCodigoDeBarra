@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Código de Barras</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+  <style>
+    body {
+      background-color: #add8e6; /* Celeste */
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #contenedor {
+      text-align: center;
+    }
+
+    #formulario {
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #000;
+      color: #fff;
+      max-width: 600px;
+      border-radius: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #tabla {
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    #tabla th, #tabla td {
+      padding: 10px;
+      border: 1px solid #fff;
+    }
+
+    #exportar-btn {
+      display: block;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="contenedor">
+  <div id="formulario">
+    <label for="codigo">Código de Barras:</label>
+    <input type="text" id="codigo" autofocus>
+    <button onclick="buscarCodigo()">Buscar</button>
+    <div id="resultado"></div>
+  </div>
+
+  <div id="tabla">
+    <h2>Tabla de Códigos de Barras</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Código de Barras</th>
+         
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody"></tbody>
+    </table>
+    <button id="exportar-btn" onclick="exportarExcel()">Exportar a Excel</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  var tablaData = [];
+
+  // Cargar datos desde el archivo JSON
+  var baseData;
+  fetch('Base.json')
+    .then(response => response.json())
+    .then(data => {
+      baseData = data;
+    });
+
+  function buscarCodigo() {
+    
+    var codigoBarra = document.getElementById('codigo').value;
+
+    // Verificar si el código ya está en la tabla
+    var existeCodigo = tablaData.some(function(item) {
+      return item.codigo === codigoBarra;
+    });
+
+    if (!existeCodigo) {
+      // Buscar el producto en la Base.json
+      var productoEncontrado = baseData.find(function(item) {
+        return item["Codigo de barra"] === codigoBarra;
+      });
+
+      if (productoEncontrado) {
+        // Si encuentra el producto, agregar a la tabla
+        tablaData.push({
+          codigo: productoEncontrado["Codigo de barra"],
+          valorURL: "URL de ejemplo",  // Puedes cambiar esto según tu lógica
+          detalle: productoEncontrado["Detalle"]
+        });
+
+        // Mostrar el resultado
+        mostrarResultado(productoEncontrado);
+
+        // Actualizar la tabla en la interfaz
+        actualizarTabla();
+      } else {
+        // Si el producto no se encuentra, mostrar un SweetAlert
+        Swal.fire({
+          icon: 'error',
+          title: 'Producto no encontrado',
+          text: 'El código de barras no existe en la Base.json.',
+        });
+      }
+    } else {
+      // Si el código ya está en la tabla, mostrar un SweetAlert
+      Swal.fire({
+        icon: 'warning',
+        title: 'Producto duplicado',
+        text: 'El código de barras ya ha sido agregado a la tabla.',
+      });
+    }
+  
+  }
+
+  function mostrarResultado(resultado) {
+    var resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.innerHTML = "<h2>Datos del Producto</h2>" +
+                             "<p><strong>Nombre:</strong> " + resultado["Detalle"] + "</p>" +
+                             "<p><strong>Precio:</strong> " + resultado["Precio"] + "</p>" 
+                           
+  }
+
+  function actualizarTabla() {
+    var tablaBody = document.getElementById('tablaBody');
+    tablaBody.innerHTML = "";
+
+    tablaData.forEach(function(item) {
+      var row = document.createElement('tr');
+      row.innerHTML = "<td>" + item.codigo + "</td>" +
+                   
+                      "<td>" + item.detalle + "</td>";
+      tablaBody.appendChild(row);
+    });
+  }
+
+  function exportarExcel() {
+    var ws = XLSX.utils.json_to_sheet(tablaData);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Tabla de Codigos");
+    var filename = "tabla_codigos.xlsx";
+    XLSX.writeFile(wb, filename);
+  }
+</script>
+
+</body>
+</html>
