@@ -5,92 +5,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>Consulta de Código de Barras</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
+<style>body {
+  background-color: #add8e6;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
 
-     <style>
-    body {
-      background-color: #add8e6; /* Celeste */
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+header {
+  position: fixed;
+  margin-top: 2em;
+}
 
-    #contenedor {
-      text-align: center;
-    }
+#contenedor {
+  text-align: center;
+  position: relative;
+  margin-top: 2em;
+  max-height: 80vh;
+  overflow-y: auto;
+}
 
-    #formulario {
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #000;
-      color: #fff;
-      max-width: 600px;
-      border-radius: 10px;
-    }
+#formulario {
+  position: relative;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20px;
+  background-color: #000;
+  color: #fff;
+  max-width: 80%;
+  border-radius: 10px;
+  z-index: 1;
+}
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
+#tabla {
+  position: relative;
+  margin-top: 140px;
+  text-align: center;
+  max-width: 1000px;
+  overflow-x: auto;
+}
 
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
+#tabla table {
+  width: 100%;
+  table-layout: relative;
+}
 
-    button {
-      background-color: #4caf50;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
+#tabla th,
+#tabla td {
+  width: 33%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 
-    button:hover {
-      background-color: #45a049;
-    }
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
 
-    #tabla {
-      margin: 20px auto;
-      text-align: center;
-    }
+input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
 
-    #tabla th, #tabla td {
-      padding: 10px;
-      border: 1px solid #fff;
-    }
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
-    #exportar-btn, #generarQR-btn {
-      display: block;
-      margin: 10px auto;
-    }
+button:hover {
+  background-color: #45a049;
+}
 
-    #codigoQr {
-      margin-top: 20px;
-    }
-  </style>
+#exportar-pdf-btn,
+#generarQR-btn {
+  display: block;
+  margin: 10px auto;
+}
+
+#codigoQr {
+  margin-top: 20px;
+}
+</style>
   
 </head>
 <body>
 
+  <header></header>
 <div id="contenedor">
   <div id="formulario">
     <label for="codigo">Código de Barras:</label>
     <input type="text" id="codigo" autofocus>
     <button onclick="buscarCodigo()">Buscar</button>
-    <button id="generarQR-btn" onclick="generarQR()">Generar QR</button>
+    
     <div id="resultado"></div>
   </div>
 
@@ -99,14 +124,15 @@
     <table>
       <thead>
         <tr>
-          <th>Código de Barras</th>
-          <th>Detalle</th>
           <th>QR</th>
+          <th>Código de Barras</th>
+         
+          
         </tr>
       </thead>
       <tbody id="tablaBody"></tbody>
     </table>
-    <button id="exportar-btn" onclick="exportarExcel()">Exportar a Excel</button>
+    
     <button id="exportar-pdf-btn" onclick="exportarPDF()">Exportar a PDF</button>
 
   </div>
@@ -143,7 +169,7 @@
         // Si encuentra el producto, agregar a la tabla
         tablaData.push({
           codigo: productoEncontrado["Codigo de barra"],
-          valorURL: "URL de ejemplo",  // Puedes cambiar esto según tu lógica
+       
           detalle: productoEncontrado["Detalle"]
         });
 
@@ -183,9 +209,10 @@
 
     tablaData.forEach(function(item) {
       var row = document.createElement('tr');
-      row.innerHTML = "<td>" + item.codigo + "</td>" +
-                      "<td>" + item.detalle + "</td>" +
-                      "<td><div id='qr-" + item.codigo + "'></div></td>";
+      row.innerHTML = "<td><div id='qr-" + item.codigo + "'></div></td>"+
+                "<td>"+item.detalle + " " + item.codigo + "</td>";
+                      
+                      
 
       tablaBody.appendChild(row);
 
@@ -194,21 +221,7 @@
     });
   }
 
-  function exportarExcel() {
-    // Crear una copia de los datos de la tabla excluyendo la columna 'valorURL'
-    var datosExportar = tablaData.map(function(item) {
-      return {
-        codigo: item.codigo,
-        detalle: item.detalle,
-      };
-    });
 
-    var ws = XLSX.utils.json_to_sheet(datosExportar);
-    var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Tabla de Codigos");
-    var filename = "tabla_codigos.xlsx";
-    XLSX.writeFile(wb, filename);
-  }
 
   function generarQRParaElemento(item, contenedorId) {
     // Crear un nuevo objeto solo con las propiedades necesarias
@@ -256,3 +269,5 @@
 
 </body>
 </html>
+
+
