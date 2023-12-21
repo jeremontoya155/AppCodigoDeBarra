@@ -12,7 +12,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
-<style>body {
+<style>
+
+
+td{
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+  .qr-cell {
+  width: 30%; /* Ajusta el ancho de la celda del código QR según sea necesario */
+  text-align: left; /* Alinea el código QR a la izquierda */
+  
+}
+
+.details-cell {
+  width: 70%; /* Ajusta el ancho de la celda del detalle y el código de barras según sea necesario */
+  text-align: left; /* Alinea el contenido a la izquierda */
+}
+
+.detail-part {
+  margin-bottom: 5px; /* Espacio entre las partes del detalle */
+      display: inline-block; /* Muestra las partes del detalle en línea */
+      font-size: 11px;
+
+}
+
+.barcode {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+#qr- {
+  margin-bottom: 10px; /* Espacio entre el QR y el detalle */
+}
+
+body {
   background-color: #add8e6;
   font-family: Arial, sans-serif;
   display: flex;
@@ -21,6 +55,10 @@
   height: 100vh;
   margin: 0;
 }
+
+#exportar-pdf-btn {
+    display: none; /* Oculta el botón de exportar al imprimir */
+  }
 
 header {
   position: fixed;
@@ -59,6 +97,7 @@ header {
 #tabla table {
   width: 100%;
   table-layout: relative;
+  border-collapse: collapse; 
 }
 
 #tabla th,
@@ -66,6 +105,10 @@ header {
   width: 33%;
   box-sizing: border-box;
   overflow: hidden;
+  border: 5px solid black;
+  padding: 8px;
+  font-size: 15px; 
+  
 }
 
 label {
@@ -104,6 +147,44 @@ button:hover {
 #codigoQr {
   margin-top: 20px;
 }
+
+
+
+@media print {
+    #tabla th,
+    #tabla td {
+    width: 6cm; /* Ajusta el ancho de la celda según sea necesario */
+    height: 2.5cm; /* Ajusta la altura de la celda según sea necesario */
+    box-sizing: border-box;
+    font-size: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 5px solid black;
+  
+    
+  }
+  
+
+  #exportar-pdf-btn {
+    display: none; /* Oculta el botón de exportar al imprimir */
+  }
+
+
+    
+    .detail-part {
+    display: inline-block; /* Muestra las partes del detalle en línea */
+    font-size: 8px;
+  }
+
+  .barcode {
+    display: inline-block; /* Muestra el código de barras en línea */
+    margin-left: 5px; /* Ajusta este valor para el espacio entre el detalle y el código de barras */
+    font-size: 8px;
+    
+  }
+
+  }
+
 </style>
   
 </head>
@@ -120,12 +201,11 @@ button:hover {
   </div>
 
   <div id="tabla">
-    <h2>Tabla de Códigos de Barras</h2>
     <table>
       <thead>
         <tr>
-          <th>QR</th>
-          <th>Código de Barras</th>
+          <th style='margin-right:-25px;'>Codigo QR</th>
+          
          
           
         </tr>
@@ -133,9 +213,10 @@ button:hover {
       <tbody id="tablaBody"></tbody>
     </table>
     
-    <button id="exportar-pdf-btn" onclick="exportarPDF()">Exportar a PDF</button>
 
   </div>
+  
+    <button id="exportar-pdf-btn" onclick="exportarPDF()">Exportar a PDF</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -203,23 +284,32 @@ button:hover {
                              "<p><strong>Precio:</strong> " + resultado["Precio"] + "</p>";
   }
 
-  function actualizarTabla() {
-    var tablaBody = document.getElementById('tablaBody');
-    tablaBody.innerHTML = "";
+function actualizarTabla() {
+  var tablaBody = document.getElementById('tablaBody');
+  tablaBody.innerHTML = "";
 
-    tablaData.forEach(function(item) {
-      var row = document.createElement('tr');
-      row.innerHTML = "<td><div id='qr-" + item.codigo + "'></div></td>"+
-                "<td>"+item.detalle + " " + item.codigo + "</td>";
-                      
-                      
+  tablaData.forEach(function(item) {
+    var row = document.createElement('tr');
 
-      tablaBody.appendChild(row);
+    // Dividir el detalle en dos partes
+    var detalleParte1 = item.detalle.substring(0, Math.ceil(item.detalle.length / 2));
+    var detalleParte2 = item.detalle.substring(Math.ceil(item.detalle.length / 2));
 
-      // Generar el QR y agregarlo al elemento td
-      generarQRParaElemento(item, 'qr-' + item.codigo);
-    });
-  }
+    row.innerHTML = "<td class='qr-cell' >" +
+                 "<div id='qr-" + item.codigo + "'></div>" +
+                 "</td>" +
+                 "<td class='details-cell'>" +
+                 "<div class='detail-part'>" + detalleParte1 + "</div>" +
+                 "<div class='detail-part'>" + detalleParte2 + "</div>" +
+                 "<div class='barcode'>" + item.codigo + "</div>" +
+                 "</td>";             
+
+    tablaBody.appendChild(row);
+
+    // Generar el QR y agregarlo al elemento td
+    generarQRParaElemento(item, 'qr-' + item.codigo);
+  });
+}
 
 
 
@@ -232,8 +322,12 @@ button:hover {
 
     var qr = new QRCode(contenedorId, {
       text: JSON.stringify(qrData),
-      width: 128,
-      height: 128,
+      width: 80,
+      height: 80,
+      colorDark : "#000000",
+	colorLight : "#ffffff",
+	correctLevel : QRCode.CorrectLevel.L
+      
     });
   }
 
@@ -250,20 +344,28 @@ button:hover {
     });
   }
   function exportarPDF() {
-  var pdfContenido = document.getElementById('tabla').outerHTML;
+      var tablaContenido = document.getElementById('tabla').innerHTML;
 
-  // Opciones para la generación del PDF
-  var opciones = {
-    margin: 10,
-    filename: 'tabla_productos.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
+      var estiloReducirLetra = "<style>" +
+        "#tabla th, #tabla td { font-size: 10px; border: 1px solid black; }" +
+        ".qr-cell " + // Ajusta la distancia entre imágenes
+        "</style>";
 
-  // Generar el PDF
-  html2pdf(pdfContenido, opciones);
-}
+      var pdfContenido = "<div style='width: 100%; max-width: 21cm; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-around;'>" +
+        estiloReducirLetra +
+        tablaContenido +
+        "</div>";
+
+      var opciones = {
+        margin: 10,
+        filename: 'tabla_productos.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 1 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf(pdfContenido, opciones);
+    }
 
 </script>
 
