@@ -22,6 +22,7 @@ td{
   .qr-cell {
   width: 30%; /* Ajusta el ancho de la celda del código QR según sea necesario */
   text-align: left; /* Alinea el código QR a la izquierda */
+  margin-bottom:3px ;
   
 }
 
@@ -313,23 +314,30 @@ function actualizarTabla() {
 
 
 
-  function generarQRParaElemento(item, contenedorId) {
-    // Crear un nuevo objeto solo con las propiedades necesarias
-    var qrData = {
-      "Codigo de barra": item.codigo,
-      "Detalle": item.detalle,
-    };
+function generarQRParaElemento(item, contenedorId) {
+  // Crear un nuevo objeto solo con las propiedades necesarias
+  var qrData = {
+    "Codigo de barra": item.codigo,
+    "Detalle": item.detalle,
+  };
 
-    var qr = new QRCode(contenedorId, {
-      text: JSON.stringify(qrData),
-      width: 80,
-      height: 80,
-      colorDark : "#000000",
-	colorLight : "#ffffff",
-	correctLevel : QRCode.CorrectLevel.L
-      
-    });
-  }
+  // Crear un nuevo elemento div para el código QR con márgenes inferiores
+  var qrDiv = document.createElement('div');
+  qrDiv.style.marginTop = '1em'; // Ajusta este valor según sea necesario
+  qrDiv.style.marginBottom = '1em'; // Ajusta este valor según sea necesario
+
+  document.getElementById(contenedorId).appendChild(qrDiv);
+
+  // Generar el QR y agregarlo al elemento div
+  var qr = new QRCode(qrDiv, {
+    text: JSON.stringify(qrData),
+    width: 80,
+    height: 80,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.L
+  });
+}
 
   function generarQR() {
     var contenedorQR = document.getElementById('codigoQr');
