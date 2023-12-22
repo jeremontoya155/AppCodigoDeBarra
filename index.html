@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>Consulta de Código de Barras</title>
+  <link rel="icon" type="image/png" href="img/Logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
@@ -48,7 +49,7 @@ td{
 }
 
 body {
-  background-color: #add8e6;
+  background-color: #1a6e6e;
   font-family: Arial, sans-serif;
   display: flex;
   align-items: center;
@@ -63,20 +64,20 @@ body {
 
 header {
   position: fixed;
-  margin-top: 2em;
+ 
 }
 
 #contenedor {
   text-align: center;
   position: relative;
-  margin-top: 2em;
+
   max-height: 80vh;
   overflow-y: auto;
 }
 
 #formulario {
   position: relative;
-  top: 20px;
+  
   left: 50%;
   transform: translateX(-50%);
   padding: 20px;
@@ -89,7 +90,7 @@ header {
 
 #tabla {
   position: relative;
-  margin-top: 140px;
+  margin-top: 70px;
   text-align: center;
   max-width: 1000px;
   overflow-x: auto;
@@ -185,18 +186,24 @@ button:hover {
   }
 
   }
+  button{
+    font-weight: bold;
+  }
+  label{
+    font-style: italic;
+  }
 
 </style>
   
 </head>
 <body>
 
-  <header></header>
+ 
 <div id="contenedor">
   <div id="formulario">
-    <label for="codigo">Código de Barras:</label>
+    <label for="codigo">ESCANEE<br> EL CODIGO DE BARRA:</label>
     <input type="text" id="codigo" autofocus>
-    <button onclick="buscarCodigo()">Buscar</button>
+    <button onclick="buscarCodigo()">Consultar</button>
     
     <div id="resultado"></div>
   </div>
