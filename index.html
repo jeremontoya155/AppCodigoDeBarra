@@ -240,50 +240,66 @@ button:hover {
       baseData = data;
     });
 
-  function buscarCodigo() {
-    var codigoBarra = document.getElementById('codigo').value;
+    document.getElementById('codigo').addEventListener('keyup', function(event) {
+  // Verificar si la tecla presionada es "Enter" (código 13)
+  if (event.key === 'Enter') {
+    buscarCodigo(); // Llamar a la función de búsqueda
+  }
+});
 
-    // Verificar si el código ya está en la tabla
-    var existeCodigo = tablaData.some(function(item) {
-      return item.codigo === codigoBarra;
+    function buscarCodigo() {
+  var codigoBarra = document.getElementById('codigo').value;
+
+  // Verificar si el código ya está en la tabla
+  var existeCodigo = tablaData.some(function(item) {
+    return item.codigo === codigoBarra;
+  });
+
+  if (!existeCodigo) {
+    // Buscar el producto en la Base.json
+    var productoEncontrado = baseData.find(function(item) {
+      return item["Codigo de barra"] === codigoBarra;
     });
 
-    if (!existeCodigo) {
-      // Buscar el producto en la Base.json
-      var productoEncontrado = baseData.find(function(item) {
-        return item["Codigo de barra"] === codigoBarra;
+    if (productoEncontrado) {
+      // Si encuentra el producto, agregar a la tabla
+      tablaData.push({
+        codigo: productoEncontrado["Codigo de barra"],
+        detalle: productoEncontrado["Detalle"]
       });
 
-      if (productoEncontrado) {
-        // Si encuentra el producto, agregar a la tabla
-        tablaData.push({
-          codigo: productoEncontrado["Codigo de barra"],
-       
-          detalle: productoEncontrado["Detalle"]
-        });
+      // Mostrar el resultado
+      mostrarResultado(productoEncontrado);
 
-        // Mostrar el resultado
-        mostrarResultado(productoEncontrado);
+      // Actualizar la tabla en la interfaz
+      actualizarTabla();
 
-        // Actualizar la tabla en la interfaz
-        actualizarTabla();
-      } else {
-        // Si el producto no se encuentra, mostrar un SweetAlert
-        Swal.fire({
-          icon: 'error',
-          title: 'Producto no encontrado',
-          text: 'El código de barras no existe en la Base.json.',
-        });
-      }
+      // Limpiar el campo y enfocarlo
+      limpiarCampo();
+
     } else {
-      // Si el código ya está en la tabla, mostrar un SweetAlert
+      // Si el producto no se encuentra, mostrar un SweetAlert
       Swal.fire({
-        icon: 'warning',
-        title: 'Producto duplicado',
-        text: 'El código de barras ya ha sido agregado a la tabla.',
+        icon: 'error',
+        title: 'Producto no encontrado',
+        text: 'El código de barras no existe en la Base.json.',
       });
     }
+  } else {
+    // Si el código ya está en la tabla, mostrar un SweetAlert
+    Swal.fire({
+      icon: 'warning',
+      title: 'Producto duplicado',
+      text: 'El código de barras ya ha sido agregado a la tabla.',
+    });
   }
+}
+
+function limpiarCampo() {
+  var campoCodigo = document.getElementById('codigo');
+  campoCodigo.value = '';  // Limpiar el campo
+  campoCodigo.focus();     // Enfocar el campo
+}
 
   function mostrarResultado(resultado) {
     var resultadoDiv = document.getElementById('resultado');
