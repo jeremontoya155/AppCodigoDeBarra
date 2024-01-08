@@ -14,29 +14,33 @@
   <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 
 <style>
-
-
-td{
+  td {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-  .qr-cell {
-  width: 30%; /* Ajusta el ancho de la celda del código QR según sea necesario */
-  text-align: left; /* Alinea el código QR a la izquierda */
-  margin-bottom:3px ;
-  
+
+.qr-cell {
+  width: 25%;
+  text-align: left;
+  margin-bottom: 0;
+  padding-right: 0; /* Nuevo estilo para eliminar el espacio derecho */
 }
 
 .details-cell {
-  width: 70%; /* Ajusta el ancho de la celda del detalle y el código de barras según sea necesario */
-  text-align: left; /* Alinea el contenido a la izquierda */
+  width: 75%;
+  text-align: left;
+  padding-left: 5px; /* Nuevo estilo para agregar un pequeño espacio a la izquierda del texto */
+}
+
+.qr-cell > div {
+  margin: 0;
+  padding: 0;
 }
 
 .detail-part {
-  margin-bottom: 5px; /* Espacio entre las partes del detalle */
-      display: inline-block; /* Muestra las partes del detalle en línea */
-      font-size: 11px;
-
+  margin-bottom: 3px;
+  display: inline-block;
+  font-size: 11px;
 }
 
 .barcode {
@@ -45,7 +49,7 @@ td{
 }
 
 #qr- {
-  margin-bottom: 10px; /* Espacio entre el QR y el detalle */
+  margin-bottom: 10px;
 }
 
 body {
@@ -59,31 +63,29 @@ body {
 }
 
 #exportar-pdf-btn {
-    display: none; /* Oculta el botón de exportar al imprimir */
-  }
+  display: none;
+}
 
 header {
   position: fixed;
- 
 }
 
 #contenedor {
   text-align: center;
   position: relative;
-
   max-height: 80vh;
   overflow-y: auto;
+  margin: 0 10px; /* Nuevos márgenes más pequeños */
 }
 
 #formulario {
   position: relative;
-  
   left: 50%;
   transform: translateX(-50%);
   padding: 20px;
   background-color: #000;
   color: #fff;
-  max-width: 80%;
+  max-width: 600px; /* Nuevo ancho máximo */
   border-radius: 10px;
   z-index: 1;
 }
@@ -99,7 +101,7 @@ header {
 #tabla table {
   width: 100%;
   table-layout: relative;
-  border-collapse: collapse; 
+  border-collapse: collapse;
 }
 
 #tabla th,
@@ -108,9 +110,8 @@ header {
   box-sizing: border-box;
   overflow: hidden;
   border: 5px solid black;
-  padding: 8px;
-  font-size: 15px; 
-  
+  padding: 5px;
+  font-size: 15px;
 }
 
 label {
@@ -150,48 +151,41 @@ button:hover {
   margin-top: 20px;
 }
 
-
-
 @media print {
-    #tabla th,
-    #tabla td {
-    width: 6cm; /* Ajusta el ancho de la celda según sea necesario */
-    height: 2.5cm; /* Ajusta la altura de la celda según sea necesario */
+  #tabla th,
+  #tabla td {
+    width: 6cm;
+    height: 2.5cm;
     box-sizing: border-box;
     font-size: 8px;
     overflow: hidden;
     position: relative;
     border: 5px solid black;
-  
-    
   }
-  
 
   #exportar-pdf-btn {
-    display: none; /* Oculta el botón de exportar al imprimir */
+    display: none;
   }
 
-
-    
-    .detail-part {
-    display: inline-block; /* Muestra las partes del detalle en línea */
+  .detail-part {
+    display: inline-block;
     font-size: 8px;
   }
 
   .barcode {
-    display: inline-block; /* Muestra el código de barras en línea */
-    margin-left: 5px; /* Ajusta este valor para el espacio entre el detalle y el código de barras */
+    display: inline-block;
+    margin-left: 5px;
     font-size: 8px;
-    
   }
+}
 
-  }
-  button{
-    font-weight: bold;
-  }
-  label{
-    font-style: italic;
-  }
+button {
+  font-weight: bold;
+}
+
+label {
+  font-style: italic;
+}
 
 </style>
   
